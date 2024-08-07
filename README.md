@@ -64,6 +64,20 @@ sudo apt install squid -y
 sudo apt install suricata -y
 ```
 
+### 3. Running the Project:
+
+### Starting Services:
+- Start services by running `scripts/start_services.sh` script:
+```bash
+bash scripts/start_services.sh
+```
+
+### Stopping Services:
+- Stop services by running `scripts/stop_services.sh` script:
+```bash
+bash scripts/stop_services.sh
+```
+
 ## Step 2: Configure UFW
 ### Run Configuration Script:
 
@@ -109,21 +123,6 @@ bash setup/configure_suricata.sh
 - Verify Suricata is running, monitoring traffic, alerts are generated and logged as per the configuration.
 ```
 tail -f /var/log/suricata/eve.json
-```
-
-
-## Step 7: Running the Project
-
-### 1. Starting Services:
-
-```bash
-bash scripts/start_services.sh
-```
-
-### 2. Stopping Services:
-
-```bash
-bash scripts/stop_services.sh
 ```
 
 ### 3. Check UFW Status:
