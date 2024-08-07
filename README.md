@@ -71,12 +71,14 @@ sudo apt install suricata -y
 ```bash
 bash scripts/start_services.sh
 ```
+![Screenshot 2024-08-07 161820](https://github.com/user-attachments/assets/0c9a9e99-67a7-4ef7-bedc-9e01f7c318d8)
 
 ### Stopping Services:
 - Stop services by running `scripts/stop_services.sh` script:
 ```bash
 bash scripts/stop_services.sh
 ```
+![Screenshot 2024-08-07 162237](https://github.com/user-attachments/assets/f01d80ee-4b33-42a8-ac4e-b5da082b72e5)
 
 ## Step 2: Configure Firewall Rules and Zones
 ### 1. Run Configuration Script:
@@ -124,12 +126,14 @@ tail -f /var/log/snort/alert
 ```
 bash setup/configure_clamav.sh
 ```
+![Screenshot 2024-08-06 151612](https://github.com/user-attachments/assets/d7f37dd0-437f-4481-9a54-f2fa06782a27)
 
 ### 2. Scan for Viruses:
 You can manually test ClamAV by scanning a directory. Replace `/path/to/directory` with the directory you want to scan.:
 ```bash
 sudo clamscan -r /path/to/directory
 ```
+![Screenshot 2024-08-06 151132](https://github.com/user-attachments/assets/63c5e56f-a072-416c-86ed-4e83812dc4c9)
 
 ## Step 5: Web Proxy and URL Filtering
 ### 1. Run the Configuration Script:
@@ -162,13 +166,14 @@ sudo systemctl start squid
 sudo nano /etc/squid/squid.conf
 ```
 
-- Look for the following lines and make sure they are configured to allow traffic:
+- Look for the following lines and make sure they are configured to allow or deny traffic. This example configured to deny traffic :
 ```
-http_access allow all
+http_access deny all
 http_port 3128
 ```
+![Screenshot 2024-08-06 142428](https://github.com/user-attachments/assets/15e10812-d4a8-4b20-8cb7-718ce2f331be)
 
-- These settings allow all incoming HTTP requests on port 3128. Save the file and restart Squid to apply the changes:
+- These settings deny all incoming HTTP requests on port 3128. Save the file and restart Squid to apply the changes:
 ```
 sudo systemctl restart squid
 ```
@@ -219,6 +224,7 @@ bash setup/configure_suricata.sh
 ```
 tail -f /var/log/suricata/eve.json
 ```
+![Screenshot 2024-08-06 150930](https://github.com/user-attachments/assets/47fcf485-f1cf-4490-ad2f-f0d0129b2fd4)
 
 ## Troubleshooting
 
@@ -301,6 +307,15 @@ sudo journalctl -xeu suricata.service
 sudo chmod 644 /etc/suricata/suricata.yaml
 sudo chown suricata:suricata /var/log/suricata/suricata.log
 ```
+
+### ClamAV Configuration Error:
+- **Check ClamAV Logs**: Review ClamAV logs for any errors or issues.
+```
+sudo tail -f /var/log/clamav/clamav.log
+sudo tail -f /var/log/clamav/freshclam.log
+```
+![Screenshot 2024-08-06 151642](https://github.com/user-attachments/assets/f6734888-a53c-4f4e-9bdb-f7725c2629df)
+![Screenshot 2024-08-06 151707](https://github.com/user-attachments/assets/2e1b1289-82da-4d1d-92e4-9711f9be935d)
 
 ## Project Structure
 
