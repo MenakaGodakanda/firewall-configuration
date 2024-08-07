@@ -71,17 +71,7 @@ sudo apt install suricata -y
 ```
 bash setup/configure_ufw.sh
 ```
-
-### Verify Rules:
-- Verify the applied rules by running:
-```
-sudo ufw status verbose
-```
-
-- Show a list of all rules with their respective numbers:
-```
-sudo ufw status numbered
-```
+![Screenshot 2024-08-05 152522](https://github.com/user-attachments/assets/2b6e7539-08e6-4d7b-9453-7f70de93ac11)
 
 ## Step 3: Configure Snort
 ### Run the Configuration Script:
@@ -106,6 +96,7 @@ sudo clamscan -r /path/to/directory
 ```
 bash setup/configure_squid.sh
 ```
+![Screenshot 2024-08-06 142357](https://github.com/user-attachments/assets/ad3367bb-36d6-4940-b811-3ad57214e1b8)
 
 ## Step 6: Configure Suricata
 
@@ -123,17 +114,80 @@ tail -f /var/log/suricata/eve.json
 
 ## Step 7: Running the Project
 
-### Starting Services:
+### 1. Starting Services:
 
 ```bash
 bash scripts/start_services.sh
 ```
 
-### Stopping Services:
+### 2. Stopping Services:
 
 ```bash
 bash scripts/stop_services.sh
 ```
+
+### 3. Check UFW Status:
+- Verify the applied rules by running:
+```
+sudo ufw status verbose
+```
+![Screenshot 2024-08-05 152728](https://github.com/user-attachments/assets/1c65b136-3f4c-4235-9a4c-fcfb78ae1396)
+
+- Show a list of all rules with their respective numbers:
+```
+sudo ufw status numbered
+```
+![Screenshot 2024-08-05 153000](https://github.com/user-attachments/assets/6dfae1f7-f112-4cd2-8c46-b6812399543e)
+
+### 4. Update UFW Rules:
+- To update UFW rules, modify the `setup/configure_ufw.sh` script and rerun it:
+```bash
+bash setup/configure_ufw.sh
+```
+
+### 5. Manage ClamAV:
+- Update ClamAV database:
+```bash
+sudo freshclam
+```
+  
+- Scan for viruses:
+```bash
+sudo clamscan -r /path/to/scan
+```
+
+### 6. Monitor Snort Alerts:
+- To monitor Snort alerts in real-time:
+```
+tail -f /var/log/snort/alert
+```
+![Screenshot 2024-08-06 140207](https://github.com/user-attachments/assets/2c98f4e5-1a15-462c-86df-b101ae56e09a)
+
+### 7. Monitor Squid Logs:
+
+- Configure Your Web Browser to Use the Squid Proxy
+To generate traffic through the Squid proxy, configure your web browser to use the proxy:
+  - **Firefox**:
+    - Open Firefox and go to `Preferences` -> `Network Settings`.
+    - Select `Manual proxy configuration`.
+    - Set `HTTP Proxy` to `localhost` and `Port` to `3128`.
+    - Check the option to use this proxy server for all protocols.
+    - Click `OK` to save the settings. <br><br>
+![Screenshot 2024-08-06 142126](https://github.com/user-attachments/assets/cdb4bdb5-11e4-4740-98c1-1346e1e532e0)
+
+  - **Google Chrome**:
+    - Open Chrome and go to `Settings` -> `Advanced` -> `System` -> `Open your computer’s proxy settings`.
+    - Configure the proxy settings to use `localhost` and port `3128`.
+
+### 8. Generate Traffic
+- After configuring the proxy in your web browser, visit a few websites. This will generate traffic that should be logged by Squid.
+
+### 9. Monitor Squid Access Logs
+- Check the Squid access loggs to monitor Squid access logs in real-time:
+```bash
+sudo tail -f /var/log/squid/access.log
+```
+![Screenshot 2024-08-06 142225](https://github.com/user-attachments/assets/da308bf2-3c15-419b-b484-f34bd30ef6a8)
 
 ## Troubleshooting
 
