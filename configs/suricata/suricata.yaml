@@ -1,0 +1,38 @@
+%YAML 1.1
+---
+logging:
+  default-log-level: info
+  outputs:
+    - console:
+        enabled: yes
+        type: json
+    - file:
+        enabled: yes
+        level: info
+        filename: /var/log/suricata/suricata.log
+    - file:
+        enabled: yes
+        level: info
+        filename: /var/log/suricata/stats.log
+        append: yes
+        format: json
+
+rule-files:
+  - /etc/suricata/rules/emerging-all.rules
+
+af-packet:
+  - interface: enp0s3
+    threads: 4
+    cluster-type: cluster_flow
+
+home-net:
+  - 192.168.1.0/24
+  - 10.0.0.0/8
+
+http-log:
+  enabled: yes
+  filename: /var/log/suricata/http.log
+
+file-store:
+  enabled: yes
+  filename: /var/log/suricata/file.log
