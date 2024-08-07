@@ -1,0 +1,1 @@
+alert tcp any any -> any 80 (msg:"HTTP traffic detected"; sid:1000001;)
