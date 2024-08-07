@@ -78,8 +78,8 @@ bash scripts/start_services.sh
 bash scripts/stop_services.sh
 ```
 
-## Step 2: Configure UFW
-### Run Configuration Script:
+## Step 2: Configure Firewall Rules and Zones
+### 1. Run Configuration Script:
 
 - Run the `configure_ufw.sh` script to apply the rules:
 ```
@@ -87,45 +87,7 @@ bash setup/configure_ufw.sh
 ```
 ![Screenshot 2024-08-05 152522](https://github.com/user-attachments/assets/2b6e7539-08e6-4d7b-9453-7f70de93ac11)
 
-## Step 3: Configure Snort
-### Run the Configuration Script:
-```
-bash setup/configure_snort.sh
-```
-
-## Step 4: Configure ClamAV
-### Run the Configuration Script:
-```
-bash setup/configure_clamav.sh
-```
-
-### Test ClamAV
-You can manually test ClamAV by scanning a directory. Replace `/path/to/directory` with the directory you want to scan.:
-```bash
-sudo clamscan -r /path/to/directory
-```
-
-## Step 5: Configure Squid
-### Run the Configuration Script:
-```
-bash setup/configure_squid.sh
-```
-![Screenshot 2024-08-06 142357](https://github.com/user-attachments/assets/ad3367bb-36d6-4940-b811-3ad57214e1b8)
-
-## Step 6: Configure Suricata
-
-### Run the Configuration Script:
-```
-bash setup/configure_suricata.sh
-```
-
-### Suricata Alert Logs:
-- Verify Suricata is running, monitoring traffic, alerts are generated and logged as per the configuration.
-```
-tail -f /var/log/suricata/eve.json
-```
-
-### 3. Check UFW Status:
+### 2. Check UFW Status:
 - Verify the applied rules by running:
 ```
 sudo ufw status verbose
@@ -138,33 +100,80 @@ sudo ufw status numbered
 ```
 ![Screenshot 2024-08-05 153000](https://github.com/user-attachments/assets/6dfae1f7-f112-4cd2-8c46-b6812399543e)
 
-### 4. Update UFW Rules:
+### 3. Update UFW Rules:
 - To update UFW rules, modify the `setup/configure_ufw.sh` script and rerun it:
 ```bash
 bash setup/configure_ufw.sh
 ```
 
-### 5. Manage ClamAV:
-- Update ClamAV database:
-```bash
-sudo freshclam
+## Step 3: Intrusion Detection/Prevention
+### 1. Run the Configuration Script:
 ```
-  
-- Scan for viruses:
-```bash
-sudo clamscan -r /path/to/scan
+bash setup/configure_snort.sh
 ```
 
-### 6. Monitor Snort Alerts:
+### 2. Monitor Snort Alerts:
 - To monitor Snort alerts in real-time:
 ```
 tail -f /var/log/snort/alert
 ```
 ![Screenshot 2024-08-06 140207](https://github.com/user-attachments/assets/2c98f4e5-1a15-462c-86df-b101ae56e09a)
 
-### 7. Monitor Squid Logs:
+## Step 4: Antivirus Scanner
+### 1. Run the Configuration Script:
+```
+bash setup/configure_clamav.sh
+```
 
-- Configure Your Web Browser to Use the Squid Proxy
+### 2. Scan for Viruses:
+You can manually test ClamAV by scanning a directory. Replace `/path/to/directory` with the directory you want to scan.:
+```bash
+sudo clamscan -r /path/to/directory
+```
+
+## Step 5: Web Proxy and URL Filtering
+### 1. Run the Configuration Script:
+```
+bash setup/configure_squid.sh
+```
+![Screenshot 2024-08-06 142357](https://github.com/user-attachments/assets/ad3367bb-36d6-4940-b811-3ad57214e1b8)
+
+### 2. Monitor Squid Access Logs
+- Check the Squid access logs to monitor Squid access logs in real-time:
+```bash
+sudo tail -f /var/log/squid/access.log
+```
+- If there is no output in the Squid access log, it could be because there has not been any traffic passing through the Squid proxy yet.
+- To generate some traffic and see logs, you can configure your web browser to use the Squid proxy and then visit a few websites. Follow the below steps.
+
+### 3. Verify Squid Configuration
+- Ensure that Squid is running and properly configured. Check the status of Squid:
+```
+sudo systemctl status squid
+```
+- If Squid is not running, start it:
+```
+sudo systemctl start squid
+```
+
+### 4. Configure Squid
+- Make sure Squid is configured to allow traffic. Open the Squid configuration file:
+```
+sudo nano /etc/squid/squid.conf
+```
+
+- Look for the following lines and make sure they are configured to allow traffic:
+```
+http_access allow all
+http_port 3128
+```
+
+- These settings allow all incoming HTTP requests on port 3128. Save the file and restart Squid to apply the changes:
+```
+sudo systemctl restart squid
+```
+
+### 5. Configure Your Web Browser to Use the Squid Proxy:
 To generate traffic through the Squid proxy, configure your web browser to use the proxy:
   - **Firefox**:
     - Open Firefox and go to `Preferences` -> `Network Settings`.
@@ -178,15 +187,38 @@ To generate traffic through the Squid proxy, configure your web browser to use t
     - Open Chrome and go to `Settings` -> `Advanced` -> `System` -> `Open your computer’s proxy settings`.
     - Configure the proxy settings to use `localhost` and port `3128`.
 
-### 8. Generate Traffic
+### 6. Generate Traffic
 - After configuring the proxy in your web browser, visit a few websites. This will generate traffic that should be logged by Squid.
 
-### 9. Monitor Squid Access Logs
-- Check the Squid access loggs to monitor Squid access logs in real-time:
+### 7. Monitor Squid Access Logs
+- Check the Squid access logs again. You should see log entries corresponding to the traffic generated by your web browser.
+
 ```bash
 sudo tail -f /var/log/squid/access.log
 ```
 ![Screenshot 2024-08-06 142225](https://github.com/user-attachments/assets/da308bf2-3c15-419b-b484-f34bd30ef6a8)
+
+
+## Step 6: Network IDS, IPS, Monitoring
+
+### 1. Check the Network Interface:
+- Verify the network interface is correct in `configs/suricata.yaml`.
+```
+# Default interface
+af-packet:
+  - interface: enp0s3
+``` 
+
+### 2. Run the Configuration Script:
+```
+bash setup/configure_suricata.sh
+```
+
+### 3. Suricata Alert Logs:
+- Verify Suricata is running, monitoring traffic, and alerts are generated and logged as per the configuration.
+```
+tail -f /var/log/suricata/eve.json
+```
 
 ## Troubleshooting
 
@@ -252,13 +284,6 @@ sudo tail -f /var/log/suricata/stats.log
 ```
 sudo nano /etc/suricata/suricata.yaml
 ```
-
-- Verify the network interface is correct in `suricata.yaml`:
-```
-# Default interface
-af-packet:
-  - interface: enp0s3
-``` 
 
 - **Check Suricata Service Status**: Run the following command to get the status of the Suricata service:
 
