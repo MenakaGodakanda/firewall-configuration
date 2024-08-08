@@ -4,6 +4,37 @@ This project demonstrates a comprehensive firewall configuration incorporating e
 
 ## Features
 
+### 1. Firewall Rules and Zones
+- **Firewall Configuration**: Sets up rules to control incoming and outgoing network traffic based on predetermined security rules.
+- **Default Policies**: Defines default behaviors for traffic that is not explicitly allowed or denied. For instance, allowing all outgoing traffic while denying all incoming traffic by default.
+- **Specific Rules**: Allows or denies traffic based on criteria such as IP addresses, ports, and protocols.
+- **Zones**: Utilizes network zones (e.g., public, private) to manage traffic differently depending on its source or destination.
+- **Advanced Filtering**: Configures advanced rules to control traffic to specific services or applications, like allowing SSH, HTTP, or HTTPS traffic while denying other traffic.
+
+### 2. Antivirus Scanner
+- **Virus Database Updates**: Regularly updates the antivirus database to recognize the latest threats.
+- **Custom Configuration**: Allows for custom configuration of the antivirus settings, including logging, database directory, and update intervals.
+- **Scheduled Scans**: Enables scheduled scans to ensure continuous protection against viruses and malware.
+- **Logging and Reporting**: Logs updates and scan results for review and troubleshooting.
+
+### 3. Intrusion Detection/Prevention
+- **Intrusion Detection System (IDS)**: Monitors network traffic for suspicious activity and alerts administrators about potential threats.
+- **Intrusion Prevention System (IPS)**: Takes action to block or prevent detected threats in addition to alerting.
+- **Custom Rules**: Defines custom rules for detecting and preventing specific types of attacks or malicious activity.
+- **Logging and Alerts**: Generates logs and alerts for detected intrusions, which helps in monitoring and responding to security incidents.
+
+### 4. Network IDS, IPS, Monitoring
+- **Network IDS**: Monitors network traffic to detect unauthorized or suspicious activities.
+- **Network IPS**: Protects the network by actively blocking detected threats.
+- **Traffic Analysis**: Analyzes network traffic patterns to identify anomalies or potential threats.
+- **Performance Monitoring**: Monitors the performance of network services and devices to ensure they are functioning correctly.
+
+### 5. Web Proxy and URL Filtering
+- **Web Proxy**: Acts as an intermediary between clients and the internet, caching web content to improve performance and reduce bandwidth usage.
+- **URL Filtering**: Controls access to websites by blocking or allowing specific URLs or domains.
+- **Access Control Lists (ACLs)**: Defines rules for allowed or denied access based on domain names or IP addresses.
+- **Logging and Reporting**: Logs access requests and provides reports on web traffic and usage.
+
 ## Coding
 
 ### Configure UFW (`setup/configure_ufw.sh`)
@@ -189,7 +220,7 @@ This configuration file is used to incorporate custom `Snort` rules into the mai
 ### Custom Rules File for Snort (`configs/snort/rules/custom.rules`)
 This script contains a single Snort rule, which is structured to detect HTTP traffic.
 
-#### Rule Header
+#### 1. Rule Header
 - **`alert`**:
   - This is the action to be taken when the rule's conditions are met. In this case, Snort will generate an alert.
 
@@ -207,7 +238,7 @@ This script contains a single Snort rule, which is structured to detect HTTP tra
   - The first `any` refers to the destination IP address. The rule will apply to traffic going to any IP address.
   - `80` is the destination port. The rule will apply to traffic going to port 80, which is commonly used for HTTP.
 
-#### Rule Options
+#### 2. Rule Options
 The rule options are enclosed in parentheses and provide additional details about the rule:
 
 - **`msg:"HTTP traffic detected"`**:
@@ -216,3 +247,73 @@ The rule options are enclosed in parentheses and provide additional details abou
 - **`sid:1000001`**:
   - The `sid` (Snort ID) is a unique identifier for the rule. Each rule must have a unique `sid`. In this example, the `sid` is `1000001`.
  
+### Configuration File for Suricata (`configs/suricata/suricata.yaml`)
+This script is a configuration file for `Suricata`, an open-source network threat detection engine. The YAML format is used for configuration, and this script defines various settings for Suricata's operation, logging, and network monitoring.
+
+#### 1. YAML Declaration
+- **`%YAML 1.1`**: Declares that the file uses YAML version 1.1.
+- **`---`**: Marks the beginning of the YAML document.
+
+#### 2. Logging Configuration
+- **`default-log-level`**: Sets the default logging level. Here, `info` means that informational messages will be logged.
+- **`outputs`**: Defines where logs will be sent and how they will be formatted.
+  - **`console`**:
+    - **`enabled: yes`**: Logs will be output to the console.
+    - **`type: json`**: Console logs will be in JSON format.
+  - **`file`**:
+    - **`enabled: yes`**: Logging to files is enabled.
+    - **`level: info`**: The log level for file logging. Here, `info` messages are logged.
+    - **`filename`**: Specifies the log file path.
+      - **`/var/log/suricata/suricata.log`** for general logs.
+      - **`/var/log/suricata/stats.log`** for statistics logs.
+    - **`append: yes`**: When enabled, logs will be appended to the file rather than overwriting it.
+    - **`format: json`**: The format for the stats log file is JSON.
+
+#### 3. Rule Files
+- **`rule-files`**: Specifies the rule files that Suricata will use to detect threats.
+  - **`/etc/suricata/rules/emerging-all.rules`**: This is the path to the rules file that Suricata will load and use for intrusion detection.
+
+#### 4. AF-Packet Configuration
+- **`af-packet`**: Configures the packet capture using the `af_packet` mode, which is a high-performance packet capture mechanism.
+  - **`interface: enp0s3`**: Specifies the network interface that Suricata will listen to. Replace enp0s3 with the name of your network interface.
+  - **`threads: 4`**: Number of threads to use for packet processing. This can help with performance on multi-core systems.
+  - **`cluster-type: cluster_flow`**: Specifies the cluster type for load balancing of network flows. `cluster_flow` is used for load balancing across multiple threads.
+
+#### 5. Home Network
+- **`home-net`**: Defines the IP address ranges considered as part of the local network (home network). These are used for rules that need to be applied to traffic originating from or destined to these IP ranges.
+  - **`192.168.1.0/24`**: Defines a subnet for the home network.
+  - **`10.0.0.0/8`**: Defines a larger subnet for the home network.
+
+#### 6. HTTP Logging
+- **`http-log`**: Configures HTTP traffic logging.
+  - **`enabled: yes`**: Enables logging of HTTP traffic.
+  - **`filename: /var/log/suricata/http.log`**: Specifies the path where HTTP logs will be saved.
+
+#### 7. File Store
+- **`file-store`**: Configures file logging for file-related events.
+  - **`enabled: yes`**: Enables logging of file-related events.
+  - **`filename: /var/log/suricata/file.log`**: Specifies the path where file logs will be saved.
+
+### Configuration File for Squid (`configs/squid/squid.conf`)
+This is the configuration file for Squid, a popular caching and forwarding web proxy server. This configuration allows clients to access sites under the `example.com` domain through the proxy while blocking access to all other sites.
+
+#### 1. HTTP Port Configuration
+- **`http_port 3128`**: This line configures Squid to listen for incoming HTTP requests on port `3128`. Port `3128` is the default port for Squid, but you can configure it to use any other port if needed.
+
+#### 2. Access Control List (ACL) Configuration
+- **`acl allowed_sites dstdomain .example.com`**: This line defines an Access Control List (ACL) named `allowed_sites`.
+  - **`acl`**: The directive used to define ACLs.
+  - **`allowed_sites`**: The name given to this ACL.
+  - **`dstdomain`**: The type of ACL, which specifies that this ACL is based on the destination domain.
+  - **`.example.com`**: The domain that the ACL applies to. The leading dot (.) means that it matches example.com and all its subdomains (e.g., `sub.example.com`, `www.example.com`).
+
+#### 3. Access Control Rules
+- **`http_access allow allowed_sites`**: This line specifies that HTTP access should be allowed for requests matching the `allowed_sites` ACL.
+  - **`http_access`**: This directive controls access to the web proxy based on the ACLs defined.
+  - **`allow`**: Permits access to the specified ACL.
+  - **`allowed_sites`**: Refers to the ACL defined earlier. Requests to domains matching `.example.com` will be allowed.
+
+#### 4. HTTP Access
+- **`http_access deny all`**: This line denies HTTP access to all other requests that do not match any of the previously defined ACLs.
+  - **`deny`**: Denies access to the requests that do not match the allowed ACLs.
+  - **`all`**: Applies to all requests that are not explicitly allowed by previous rules.
