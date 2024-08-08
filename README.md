@@ -4,7 +4,7 @@ This project demonstrates a comprehensive firewall configuration incorporating e
 <a href="https://github.com/MenakaGodakanda/firewall-configuration/blob/main/Project_Description.md">Project Description</a>
 
 ## Overview
-<img width="1401" alt="Screenshot 2024-08-07 at 3 02 41 PM" src="https://github.com/user-attachments/assets/1994c5d3-6c73-47f1-b4a3-55a77a8cebf9">
+<img width="1401" alt="Screenshot 2024-08-08 at 3 34 09 PM" src="https://github.com/user-attachments/assets/564cc85b-f246-45fa-a653-73e544bfdc6b">
 
 ### Explanation:
 
