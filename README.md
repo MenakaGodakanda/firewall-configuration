@@ -324,27 +324,27 @@ firewall-configuration/
 │
 ├── README.md
 ├── setup/
-│   ├── configure_ufw.sh			# Configures UFW with predefined rules.
+│   ├── configure_ufw.sh			  # Configures UFW with predefined rules.
 │   ├── configure_snort.sh			# Configures Snort.
 │   ├── configure_clamav.sh			# Configures ClamAV.
 │   ├── configure_squid.sh			# Configures Squid proxy.
-│   └── configure_suricata.sh
+│   └── configure_suricata.sh   # Configures Suricata.
 ├── configs/
 │   ├── ufw/
 │   │   └── ufw_rules.conf			# Configuration file for UFW rules.
 │   ├── snort/
-│   │   ├── snort.conf
+│   │   ├── snort.conf          # Configuration file for Snort.
 │   │   └── rules/
-│   │       └── custom.rules
+│   │       └── custom.rules    # Custom rules file for Snort
 │   ├── clamav/
 │   │   └── freshclam.conf			# Configuration file for ClamAV updates.
 │   ├── squid/
-│   │   └── squid.conf
+│   │   └── squid.conf          # Configuration file for Squid.
 │   └── suricata/
-│       └── suricata.yaml
+│       └── suricata.yaml       # Configuration file for Suricata.
 └── scripts/
-    ├── start_services.sh
-    └── stop_services.sh
+    ├── start_services.sh       # Start the services.
+    └── stop_services.sh        # Stop the services.
 ```
 
 ## License
